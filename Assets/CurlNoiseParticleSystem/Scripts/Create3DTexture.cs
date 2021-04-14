@@ -3,77 +3,56 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+/// <summary>
+/// 3Dテクスチャを作成する
+/// </summary>
 public class Create3DTexture : MonoBehaviour
 {
-    [SerializeField] int size = 32;
-    [SerializeField] TextureWrapMode wrapMode = TextureWrapMode.Clamp;
-    [SerializeField] ComputeShader computeshader = null;
-    private TextureFormat format = TextureFormat.RGBAHalf;
-    private RenderTexture renderTex = null;
+    [SerializeField] int size = 64; //立方体3Dテクスチャの1辺のサイズ
+    [SerializeField] Vector3 offset = new Vector3(0f,0f,0f);//ノイズの位相のずれ
+    [SerializeField] float density = 3f;//ノイズの密度
+    [SerializeField] TextureWrapMode wrapMode = TextureWrapMode.Clamp; //テクスチャのラップモード
+    [SerializeField] ComputeShader computeshader = null; //計算に使うComputeShader
+    [SerializeField] string savePath = "Assets/CurlNoiseParticleSystem/Textures/";//3Dテクスチャ保存パス
+    [SerializeField] string fileName = "CurlNoise3DTexture";//3Dテクスチャ名
+    private TextureFormat format = TextureFormat.RGBAHalf;//テクスチャの色のフォーマット
+    const int threadCount = 8;//compute shader のスレッド数
 
+    /// <summary>
+    /// ContextMenuから3Dテクスチャを生成する
+    /// </summary>
     [ContextMenu ("Gen 3dtexture")]
     void GenCurlNoise3DTex()
     {
-        // Initialize Texture3D
+        // Texture3D 初期化
         Texture3D texture3d = new Texture3D(size, size, size, format, false);
         texture3d.wrapMode = wrapMode;
 
-
-
-        // Create a 3-dimensional array to store color data
+        // 色情報を保存する3次元の配列を初期化する
         Color[] colors3d = new Color[size * size * size];
 
-        for(int i=0; i<size; i++)
-        {
-            // Initialize RenderTexture
-            renderTex = new RenderTexture(size,size,1,RenderTextureFormat.ARGBHalf);
-            renderTex.enableRandomWrite = true;
-            renderTex.useMipMap = false;
-            renderTex.wrapMode = wrapMode;
-            renderTex.useDynamicScale = false;
+        // float4 配列の compute buffer
+        ComputeBuffer colorBuffer = new ComputeBuffer(size * size * size, sizeof(float) * 4);
 
-            // Initialize Texture2D
-            Texture2D texture2d = new Texture2D(size,size,format,false);
-            texture2d.wrapMode = wrapMode;
+        // ComputeShaderに値とバッファ渡して計算する
+        computeshader.SetFloat("size", (float)size);
+        computeshader.SetFloat("density", density);
+        computeshader.SetVector("offset", offset);
+        computeshader.SetBuffer(0,"velocityBuffer",colorBuffer);
+        computeshader.Dispatch(0, size/threadCount, size/threadCount, size/threadCount);
 
-            RenderTexture.active = renderTex;
-            // calc curl-noise and save RenderTexture
-            computeshader.SetFloat("z", (float)i);
-            computeshader.SetFloat("size", (float)size);
-            computeshader.SetTexture(0,"tex",renderTex);
-            computeshader.Dispatch(0,size/8,size/8,1);
+        // 結果を貰う
+        colorBuffer.GetData(colors3d);
 
-            // copy rendertex to tex2d
-            RenderTexture.active = renderTex;
-            texture2d.ReadPixels(new Rect(0,0,renderTex.width,renderTex.height),0,0);
-            texture2d.Apply();
-
-            // tex2d to color array
-            var colors = texture2d.GetPixels();
-
-            int index = 0;
-            foreach (var color in colors)
-            {
-                // Debug.Log(color);
-                colors3d[size*size*i+index] = color;
-                index += 1;
-            }
-
-            Resources.UnloadUnusedAssets();
-        }
-
-        // 3D texture setpixels
+        // 配列のデータを3D texture にうつす
         texture3d.SetPixels(colors3d);
         texture3d.Apply();
 
-        // Save the texture to your Unity Project
-        AssetDatabase.CreateAsset(texture3d, "Assets/CurlNoiseParticleSystem/Textures/CurlNoise3DTexture.asset");
+        // アセットファイルとして3DTextureを保存
+        AssetDatabase.CreateAsset(texture3d, savePath+fileName+".asset");
 
+        // メモリ開放
+        colorBuffer.Release();
+        Resources.UnloadUnusedAssets();
     }
-
-    void OnDestroy()
-    {
-        renderTex.Release();
-    }
-
 }

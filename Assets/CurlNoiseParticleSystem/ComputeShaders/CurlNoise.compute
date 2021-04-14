@@ -1,18 +1,19 @@
-﻿// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel CSMain
+﻿#pragma kernel CSMain
 #include "meta_function.cginc"
-// Create a RenderTexture with enableRandomWrite flag and set it
-// with cs.SetTexture
-RWTexture2D<float4> tex;
-float z;
-float size;
 
-[numthreads(8,8,1)]
+float  size;    //立方体3Dテクスチャの1辺のサイズ
+float  density; //ノイズの密度
+float3 offset;  //ノイズの位相のずれ
+RWStructuredBuffer<float4> velocityBuffer;
+
+[numthreads(8,8,8)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-    float3 pos = float3((float)id.x,(float)id.y,(float)z)/size*3;
-    float3 noise = curlNoise(pos);
-    tex[id.xy] = float4(noise.x,noise.y,noise.z,1.0);
-    // tex[id.xy] = float4(id.x,id.y,z,1.0);//debug
+    // get voxel pos
+    float3 pos = float3((float)id.x,(float)id.y,(float)id.z)/size*density;
+    // get curl noise
+    float3 noise = curlNoise(pos + offset);
+    // set result
+    velocityBuffer[id.x + id.y * size + id.z * size * size] = float4(noise.x,noise.y,noise.z,1.0);
 }
 
