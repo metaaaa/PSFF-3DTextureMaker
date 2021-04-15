@@ -11,7 +11,6 @@ public class Create3DTexture : MonoBehaviour
     [SerializeField] int size = 64; //立方体3Dテクスチャの1辺のサイズ
     [SerializeField] Vector3 offset = new Vector3(0f,0f,0f);//ノイズの位相のずれ
     [SerializeField] float density = 3f;//ノイズの密度
-    [SerializeField] TextureWrapMode wrapMode = TextureWrapMode.Clamp; //テクスチャのラップモード
     [SerializeField] ComputeShader computeshader = null; //計算に使うComputeShader
     [SerializeField] string savePath = "Assets/CurlNoiseParticleSystem/Textures/";//3Dテクスチャ保存パス
     [SerializeField] string fileName = "CurlNoise3DTexture";//3Dテクスチャ名
@@ -26,7 +25,6 @@ public class Create3DTexture : MonoBehaviour
     {
         // Texture3D 初期化
         Texture3D texture3d = new Texture3D(size, size, size, format, false);
-        texture3d.wrapMode = wrapMode;
 
         // 色情報を保存する3次元の配列を初期化する
         Color[] colors3d = new Color[size * size * size];

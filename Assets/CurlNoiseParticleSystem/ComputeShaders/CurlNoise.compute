@@ -1,5 +1,5 @@
 ﻿#pragma kernel CSMain
-#include "meta_function.cginc"
+#include "CurlNoise.cginc"
 
 float  size;    //立方体3Dテクスチャの1辺のサイズ
 float  density; //ノイズの密度

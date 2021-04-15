@@ -1,6 +1,16 @@
+# webgl-noise
+
+The following shaders are originally developed by Stefan Gustavson and Ahima
+Arts. These shaders are distributed under the MIT license. See the file headers
+for details.
+
+- SimplexNoise3D.cginc
+
+
+
 MIT License
 
-Copyright (c) 2021 meta
+Copyright (c) 2021 @meta556
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

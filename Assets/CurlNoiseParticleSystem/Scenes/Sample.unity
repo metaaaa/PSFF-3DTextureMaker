@@ -4825,7 +4825,7 @@ GameObject:
   - component: {fileID: 1470644454}
   - component: {fileID: 1470644453}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: TexGen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4846,7 +4846,6 @@ MonoBehaviour:
   size: 64
   offset: {x: 0, y: 0, z: 0}
   density: 3
-  wrapMode: 1
   computeshader: {fileID: 7200000, guid: c1fc7da9c0d414b428610f364a8b0861, type: 3}
   savePath: Assets/CurlNoiseParticleSystem/Textures/
   fileName: CurlNoise3DTexture
@@ -5326,7 +5325,7 @@ ParticleSystemForceField:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-    m_VectorField: {fileID: 11700000, guid: 8c62d5de976e1d64f82baf53612d9ac2, type: 2}
+    m_VectorField: {fileID: 11700000, guid: 3ccc2903e9c804846a23b349f82dd6c9, type: 2}
     m_VectorFieldSpeedCurve:
       serializedVersion: 2
       minMaxState: 0
