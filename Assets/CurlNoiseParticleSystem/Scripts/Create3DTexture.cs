@@ -16,7 +16,7 @@ public class Create3DTexture : MonoBehaviour
     [SerializeField] string savePath = "Assets/CurlNoiseParticleSystem/Textures/";//3Dテクスチャ保存パス
     [SerializeField] string fileName = "CurlNoise3DTexture";//3Dテクスチャ名
     private TextureFormat format = TextureFormat.RGBAHalf;//テクスチャの色のフォーマット
-    const int threadCount = 8;//compute shader のスレッド数
+    const int threadCount = 8;//compute shader 1方向ののスレッド数
 
     /// <summary>
     /// ContextMenuから3Dテクスチャを生成する
